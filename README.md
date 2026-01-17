@@ -44,5 +44,4 @@ Lagu yang digunakan adalah Sency - My Type. Berikut adalah urutan lirik beserta 
 Terhubung dengan pengembang melalui tautan aktif di bawah ini:
  * Telegram: https://t.me/Ikhsanproject
  * YouTube: https://youtube.com/@ikhsan-project
-By: IKHSAN-PROJECT // SYSTEM ACTIVE
-Would you like me to help you set up a GitHub Pages site so you can host this project online for free?
+By: IKHSAN-PROJECT
