@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sency - Ikhsan Project Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-yellow: #f3ff00;
+            --bg-dark: #050505;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            color: #fff; font-family: 'Rajdhani', sans-serif;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(to right, rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1;
+        }
+
+        .marquee-container {
+            width: 90vw; max-width: 600px;
+            overflow: hidden;
+            border-left: 3px solid var(--neon-pink);
+            border-right: 3px solid var(--neon-pink);
+            background: rgba(255, 0, 255, 0.1);
+            margin-bottom: 15px;
+            padding: 8px 0;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            animation: marquee 12s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-container {
+            width: 95vw; max-width: 600px;
+            height: 60vh; max-height: 450px;
+            border: 2px solid var(--neon-blue);
+            position: relative; background: rgba(0, 0, 0, 0.95);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px var(--neon-blue);
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+        }
+
+        .overlay-center {
+            position: absolute; z-index: 100;
+            display: flex; justify-content: center; align-items: center;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+        }
+
+        .overlay-btn {
+            padding: 20px 50px;
+            background: transparent;
+            color: var(--neon-yellow);
+            border: 3px solid var(--neon-yellow);
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            font-size: clamp(1rem, 5vw, 1.4rem);
+            letter-spacing: 5px;
+            box-shadow: 0 0 20px var(--neon-yellow);
+            clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+            transition: 0.3s;
+        }
+
+        .overlay-btn:hover { background: var(--neon-yellow); color: #000; box-shadow: 0 0 40px var(--neon-yellow); }
+
+        .lyric-box {
+            width: 100%; height: 100%;
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .lyric-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1rem, 6vw, 2.2rem);
+            text-align: center; width: 85%;
+            position: absolute; opacity: 0;
+            transform: scale(0.8) translateY(15px);
+            transition: all 0.5s ease;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
+        .lyric-text.active {
+            opacity: 1; transform: scale(1) translateY(0);
+            text-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .pink { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink) !important; }
+        .yellow { color: var(--neon-yellow); text-shadow: 0 0 15px var(--neon-yellow) !important; }
+        .emoji { display: block; font-size: 3.5rem; margin-bottom: 10px; }
+
+        #progress-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 6px;
+            background: var(--neon-pink); transform: scaleX(0); transform-origin: left;
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+
+    <div class="marquee-container">
+        <div class="marquee-text">BY : IKHSAN-PROJECT // SENCY - MY TYPE // SYSTEM ACTIVE // ENJOY THE VIBE</div>
+    </div>
+
+    <div class="main-container">
+        <div id="btn-container" class="overlay-center">
+            <button id="main-btn" class="overlay-btn" onclick="togglePlay()">START PROJECT ⚡</button>
+        </div>
+        
+        <div class="lyric-box" id="lyric-container"></div>
+        <div id="progress-bar"></div>
+    </div>
+
+    <audio id="myAudio" src="https://files.catbox.moe/2yvbd2.mp3"></audio>
+
+    <script>
+        const audio = document.getElementById('myAudio');
+        const btnContainer = document.getElementById('btn-container');
+        const mainBtn = document.getElementById('main-btn');
+        const lyricContainer = document.getElementById('lyric-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        // DAFTAR LIRIK: Hanya perlu mengatur "duration" (berapa lama teks muncul)
+        const rawLyrics = [
+            { text: "<span class='emoji'>😜</span>Tingkah lucu, cek", duration: 1.5 },
+            { text: "<span class='emoji'>🤓</span>Kutu buku, cek", duration: 1.5 },
+            { text: "<span class='emoji'>❤️</span>Sayang ortu, cek", duration: 1.5, class: "pink" },
+            { text: "<span class='emoji'>💯</span>Kamu 100% (my type)", duration: 2.5, class: "yellow" },
+            { text: "<span class='emoji'>✨</span>Baby, you look so fine", duration: 2.0 },
+            { text: "<span class='emoji'>🏙️</span>Kita makan malam", duration: 1.5 },
+            { text: "<span class='emoji'>🍴</span>Dinner rooftop yang high", duration: 2.0, class: "pink" },
+            { text: "<span class='emoji'>👗?</span>What's the dress code, baby?", duration: 1.5 },
+            { text: "<span class='emoji'>🖤💛</span>Black and yellow, maybe?", duration: 1.5, class: "yellow" },
+            { text: "<span class='emoji'>🚀</span>Kalo udah ready", duration: 1.5 },
+            { text: "<span class='emoji'>👸</span>I'll be there for my lady", duration: 2.25, class: "pink" },
+            { text: "<span class='emoji'>🧴❌</span>No make up, tetep cantik", duration: 2.25 },
+            { text: "<span class='emoji'>💃</span>Paling asyik (asyik!)", duration: 1.5, class: "yellow" },
+            { text: "<span class='emoji'>💎</span>Paling classy", duration: 1.5 },
+            { text: "<span class='emoji'>🔥</span>Paling~", duration: 1.0, class: "pink" },
+            { text: "<span class='emoji'>🤝</span>Sama-sama suka", duration: 1.5, class: "pink" },
+            { text: "<span class='emoji'>🤔</span>Tapi nunggu apa?", duration: 2.0 },
+            { text: "<span class='emoji'>🌍</span>Memang kita berbeda", duration: 1.5, class: "yellow" },
+            { text: "<span class='emoji'>☯️</span>Tapi tetap sama", duration: 1.5 },
+            { text: "<span class='emoji'>❤️</span>Sama-sama suka", duration: 1.5, class: "pink" },
+            { text: "<span class='emoji'>❓</span>Jadi nunggu apa?", duration: 1.5 },
+            { text: "<span class='emoji'>📜❌</span>Tak perlu kata sumpah", duration: 2.0, class: "pink" },
+            { text: "<span class='emoji'>👴👵</span>Berdua sampai tua", duration: 2.0, class: "yellow" },
+            { text: "<span class='emoji'>🎵</span>Hm-hm, hm-hm...", duration: 6.0 }
+        ];
+
+        let lyricData = [];
+        let startTime = 0.5; // Mulai di detik 0.5
+
+        // Mengolah data agar otomatis menghitung waktu masuk
+        rawLyrics.forEach((item, index) => {
+            lyricData.push({
+                ...item,
+                time: startTime
+            });
+            startTime += item.duration;
+        });
+
+        // Menambahkan lirik "End Project" yang akan tampil sampai lagu benar-benar habis
+        lyricData.push({
+            text: "<span class='emoji'>✨</span>THANKS FOR WATCHING",
+            time: startTime,
+            duration: 999, // Biar tetap ada sampai lagu selesai
+            class: "yellow"
+        });
+
+        // Tampilkan ke layar
+        lyricData.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = `lyric-text ${item.class || ''}`;
+            div.id = `lirik-${index}`;
+            div.innerHTML = item.text;
+            lyricContainer.appendChild(div);
+        });
+
+        function togglePlay() {
+            audio.play();
+            btnContainer.style.display = 'none';
+        }
+
+        audio.ontimeupdate = () => {
+            const currentTime = audio.currentTime;
+            const progress = (currentTime / audio.duration) || 0;
+            progressBar.style.transform = `scaleX(${progress})`;
+
+            lyricData.forEach((item, index) => {
+                const element = document.getElementById(`lirik-${index}`);
+                if (currentTime >= item.time && currentTime < (item.time + item.duration)) {
+                    element.classList.add('active');
+                } else {
+                    element.classList.remove('active');
+                }
+            });
+        };
+
+        // Otomatis pause jika keluar tab
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) audio.pause();
+            else if (btnContainer.style.display === 'none') audio.play();
+        });
+
+        // LOGIKA UTAMA: Tombol muncul hanya jika lagu SELESAI
+        audio.onended = () => {
+            mainBtn.innerHTML = "REPLAY PROJECT 🔄";
+            btnContainer.style.display = 'flex';
+            audio.currentTime = 0;
+            // Bersihkan lirik aktif
+            document.querySelectorAll('.lyric-text').forEach(el => el.classList.remove('active'));
+        };
+    </script>
+</body>
+</html>
